@@ -1,58 +1,56 @@
 package com.example.flashresto;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RatingBar;
 import android.widget.Toast;
-
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.example.flashresto.AppDataBase.AppDataBase;
 import com.example.flashresto.entity.Menu;
+import java.util.List;
 
-public class    MainActivity extends AppCompatActivity {
-    private AppDataBase app;
-
+public class MainActivity extends AppCompatActivity {
+    private AppDataBase appDataBase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
-        EditText editText = findViewById(R.id.Plat);
+
+        EditText editText = findViewById(R.id.plat);
         EditText editText2 = findViewById(R.id.description);
         EditText editText3 = findViewById(R.id.prix);
+        Button ajouterButton = findViewById(R.id.Ajouter);
+        Button afficherButton = findViewById(R.id.afficherButton);
 
-        Button Ajouter = findViewById(R.id.Ajouter);
-        app = AppDataBase.getInstance(this);
+        appDataBase = AppDataBase.getInstance(this);
 
-        Ajouter.setOnClickListener(v -> {
-            Menu menuf = new Menu();
-            menuf.setPlat(editText.getText().toString());
-            menuf.setDescription(editText2.getText().toString());
+        // Bouton pour ajouter un menu
+        ajouterButton.setOnClickListener(v -> {
+            String name = editText.getText().toString();
+            String description = editText2.getText().toString();
+            String priceText = editText3.getText().toString();
 
-            String prixText = editText3.getText().toString();
-            if (!prixText.isEmpty()) {
-                try {
-                    int prix = Integer.parseInt(prixText);
-                    menuf.setPrix(prix);
-                    app.menuDao().insertOne(menuf);
-                    Toast.makeText(this, "Menu ajouté avec succès", Toast.LENGTH_SHORT).show();
-                } catch (NumberFormatException e) {
-                    Toast.makeText(this, "Veuillez entrer un prix valide", Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                Toast.makeText(this, "Veuillez entrer un prix", Toast.LENGTH_SHORT).show();
+            if (name.isEmpty() || description.isEmpty() || priceText.isEmpty()) {
+                Toast.makeText(this, "All fields must be filled", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            try {
+//                int price = Integer.parseInt(priceText);
+                Toast.makeText(this, "Menu added successfully", Toast.LENGTH_SHORT).show();
+            } catch (NumberFormatException e) {
+                Toast.makeText(this, "Please enter a valid price", Toast.LENGTH_SHORT).show();
             }
         });
+
+        // Bouton pour afficher le menu
+        afficherButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, AffichageMenu.class);
+            startActivity(intent);
+        });
     }
-    }
+}
