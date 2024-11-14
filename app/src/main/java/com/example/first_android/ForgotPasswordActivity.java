@@ -1,13 +1,13 @@
 package com.example.first_android;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
 import com.example.first_android.databinding.ActivityForgotPasswordBinding;
+import java.util.Random;
 
 public class ForgotPasswordActivity extends AppCompatActivity {
 
@@ -25,20 +25,25 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         binding.resetPasswordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // Inside onClickListener for reset password button
                 String email = binding.resetEmail.getText().toString();
-
                 if (email.equals("")) {
                     Toast.makeText(ForgotPasswordActivity.this, "Email is required", Toast.LENGTH_SHORT).show();
                 } else {
                     Boolean checkEmail = databaseHelper.checkEmail(email);
-
                     if (checkEmail) {
-                        // Here, you can send an email or display a password reset form
-                        // For simplicity, we'll just display a message
-                        Toast.makeText(ForgotPasswordActivity.this, "Password reset link sent", Toast.LENGTH_SHORT).show();
+                        // Generate a reset code
+                        String resetCode = String.valueOf(new Random().nextInt(999999));
 
-                        // Redirect user to a password update activity or return to login
-                        Intent intent = new Intent(ForgotPasswordActivity.this, UpdatePasswordActivity.class);
+                        // Update reset code in database
+                        databaseHelper.updateResetCode(email, resetCode);
+
+                        // Send email with the reset code
+                        EmailUtil.sendEmail(email, "Password Reset Code", "Your reset code is: " + resetCode);
+
+                        Toast.makeText(ForgotPasswordActivity.this, "Reset code sent to your email", Toast.LENGTH_SHORT).show();
+
+                        Intent intent = new Intent(ForgotPasswordActivity.this, VerifyResetCodeActivity.class);
                         intent.putExtra("email", email);
                         startActivity(intent);
                     } else {

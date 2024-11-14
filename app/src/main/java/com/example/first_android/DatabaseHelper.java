@@ -23,16 +23,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result != -1;
     }
 
-
     @Override
     public void onCreate(SQLiteDatabase MyDatabase) {
-        MyDatabase.execSQL("create Table users(email TEXT primary key, password TEXT)");
+        MyDatabase.execSQL("CREATE TABLE users(email TEXT PRIMARY KEY, password TEXT, reset_code TEXT)");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase MyDB, int i, int i1) {
         MyDB.execSQL("drop Table if exists users");
     }
+
 
     public Boolean insertData(String email, String password){
         SQLiteDatabase MyDatabase = this.getWritableDatabase();
@@ -68,4 +68,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return false;
         }
     }
+    public Boolean updateResetCode(String email, String resetCode) {
+        SQLiteDatabase MyDatabase = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("reset_code", resetCode);
+        int result = MyDatabase.update("users", contentValues, "email=?", new String[]{email});
+        return result != -1;
+    }
+    public Boolean checkResetCode(String email, String resetCode) {
+        SQLiteDatabase MyDatabase = this.getWritableDatabase();
+        Cursor cursor = MyDatabase.rawQuery("SELECT * FROM users WHERE email = ? AND reset_code = ?", new String[]{email, resetCode});
+        return cursor.getCount() > 0;
+    }
+
+
 }

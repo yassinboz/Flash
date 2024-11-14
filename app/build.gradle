@@ -5,7 +5,15 @@ plugins {
 android {
     namespace 'com.example.first_android'
     compileSdk 34
-
+    packagingOptions {
+        resources {
+            excludes += [
+                    "META-INF/NOTICE.md",  // Exclude duplicate files
+                    "META-INF/LICENSE.md",  // If similar issues arise with LICENSE.md or other files
+                    // Add other files if necessary
+            ]
+        }
+    }
     defaultConfig {
         applicationId "com.example.first_android"
         minSdk 24
@@ -45,4 +53,6 @@ dependencies {
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
+    implementation 'com.sun.mail:android-mail:1.6.7'
+    implementation 'com.sun.mail:android-activation:1.6.7'
 }
